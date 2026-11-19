@@ -1,0 +1,152 @@
+/* =============================================================
+   BARBARIK — dark military-tech analytics theme
+   ============================================================= */
+
+:root {
+  --bg-base: #0a0e1a;
+  --bg-panel: #0f1729;
+  --bg-card: #1a2332;
+  --border: #2d3748;
+  --accent-a: #3b82f6;   /* Side A — blue */
+  --accent-b: #ef4444;   /* Side B — red */
+  --accent-ok: #10b981;  /* green */
+  --text-primary: #e5e9f0;
+  --text-secondary: #8b95a7;
+  --radius: 10px;
+}
+
+/* --- Base page --- */
+html, body, [class*="css"] {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif !important;
+  color: var(--text-primary);
+}
+
+.stApp {
+  background-color: var(--bg-base);
+}
+
+/* Shell / panels (sidebar, main) */
+[data-testid="stSidebar"] {
+  background-color: var(--bg-panel);
+  border-right: 1px solid var(--border);
+}
+
+.block-container {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+/* --- Cards --- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+.card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+.card .subtitle {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+/* --- Header / title --- */
+.app-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1;
+}
+.app-tagline {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-top: 0.35rem;
+}
+
+/* --- Academic simulation banner --- */
+.academic-banner {
+  background: linear-gradient(90deg, rgba(239,68,68,0.12), rgba(16,185,129,0.12));
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent-ok);
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.25rem;
+}
+
+/* --- Buttons --- */
+.stButton > button {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-weight: 600;
+}
+.stButton > button:hover {
+  border-color: var(--accent-a);
+  color: var(--accent-a);
+}
+
+/* Primary action button (RUN SIMULATION) */
+.stButton > button[kind="primary"] {
+  background: var(--accent-a);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+}
+.stButton > button[kind="primary"]:hover {
+  background: #2f6bd9;
+  color: #ffffff;
+}
+
+/* --- Metrics --- */
+.stMetric {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.8rem;
+}
+.stMetric label {
+  color: var(--text-secondary) !important;
+}
+.stMetric [data-testid="stMetricValue"] {
+  color: var(--text-primary) !important;
+}
+
+/* --- Outcome text variants --- */
+.outcome-big {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.6rem 0;
+}
+.outcome-a { color: var(--accent-a); }
+.outcome-b { color: var(--accent-b); }
+.outcome-s { color: var(--accent-ok); }
+
+/* predicted background accent */
+.outcome-panel-a  { border-left: 4px solid var(--accent-a); }
+.outcome-panel-b  { border-left: 4px solid var(--accent-b); }
+.outcome-panel-s  { border-left: 4px solid var(--accent-ok); }
+
+/* Scenario id chip in header */
+.scenario-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.7rem;
+  font-weight: 600;
+  color: var(--accent-ok);
+  margin-right: 0.6rem;
+}

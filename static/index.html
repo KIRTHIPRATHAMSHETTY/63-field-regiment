@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BARBARIK - ML-Based Wargaming Outcome Prediction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- ==================== CINEMATIC BOOT SCREEN ==================== -->
+    <div id="bootScreen" class="boot-screen">
+        <div class="boot-grid-bg"></div>
+        <div class="boot-scanner-beam"></div>
+        <div class="boot-content">
+            <div class="boot-logo">
+                <img src="/static/assets/barbarik-boot-logo.png" alt="63 Field Regiment insignia">
+            </div>
+            
+            <h1 class="boot-title">
+                <span class="boot-brand">BARBARIK</span>
+                <span class="boot-heading-main">AI-Driven Wargaming &amp; Combat Outcome Prediction Framework</span>
+                <span class="boot-unit">63 Field Regiment</span>
+            </h1>
+            <div class="boot-subtitle">AN INTELLIGENT MACHINE LEARNING FRAMEWORK</div>
+            <div class="boot-tagline">ARTIFICIAL WARGAMING & OUTCOME PREDICTION SYSTEM</div>
+            
+            <div class="boot-terminal-box">
+                <div class="terminal-line" id="termLine1">> INITIALIZING BARBARIK CORE ............. OK</div>
+                <div class="terminal-line" id="termLine2">> LOADING SIMULATION ENGINE ............. OK</div>
+                <div class="terminal-line" id="termLine3">> LOADING TERRAIN GENERATOR ............. OK</div>
+                <div class="terminal-line" id="termLine4">> LOADING DATASET (20,000 SCENARIOS) .... OK</div>
+                <div class="terminal-line" id="termLine5">> LOADING RANDOM FOREST MODEL .......... OK</div>
+                <div class="terminal-line" id="termLine6">> INITIALIZING EXPLAINABLE AI (SHAP) .... OK</div>
+                <div class="terminal-line" id="termLine7">> CONNECTING ANALYTICS ENGINE .......... OK</div>
+                <div class="terminal-line" id="termLine8">> SYSTEM INTEGRITY ..................... 100%</div>
+            </div>
+
+            <div class="boot-action-area">
+                <button id="btnInitBoot" class="btn-init-boot">
+                    <i data-lucide="power"></i>
+                    [ INITIALIZE BARBARIK ]
+                </button>
+            </div>
+
+            <div class="boot-footer">
+                <button id="btnSkipBoot" class="btn-skip-boot">SKIP INTRO →</button>
+                <div class="academic-disclaimer">
+                    Academic Artificial Simulation | Fictional Scenarios & Environments | Educational & Research Purpose
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN DASHBOARD CONTAINER ==================== -->
+    <div class="app-container" id="appContainer">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-shield">
+                    <img src="/static/assets/barbarik-boot-logo.png" alt="BARBARIK lion insignia">
+                </div>
+                <div class="header-title">
+                    <div class="header-main-title">
+                        <span class="header-brand">BARBARIK</span>
+                        <span class="header-colon">:</span>
+                        <span class="header-heading">AI-Driven Wargaming &amp; Combat Outcome Prediction Framework</span>
+                        <span class="header-divider"></span>
+                        <span class="header-unit">63 Field Regiment</span>
+                    </div>
+                    <div class="header-subtitle">Predicting Outcomes in Simulated Military Scenarios using Machine Learning</div>
+                </div>
+
+                <!-- LIVE SYSTEM STATUS PILLS -->
+                <div class="status-pills-bar">
+                    <span class="status-pill online"><span class="pulse-dot"></span> SYSTEM ONLINE</span>
+                    <span class="status-pill"><i data-lucide="cpu"></i> MODEL: RANDOM FOREST</span>
+                    <span class="status-pill"><i data-lucide="check-circle-2"></i> SIM: READY</span>
+                    <span class="status-pill"><i data-lucide="sparkles"></i> XAI: READY</span>
+                    <span class="status-pill"><i data-lucide="database"></i> DB: CONNECTED</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- AUDIO & PRESENTATION CONTROLS -->
+                <button id="soundToggleBtn" class="header-tool-btn" title="Toggle UI Sound Effects (Hotkey: S)">
+                    <i data-lucide="volume-2"></i> SOUND ON
+                </button>
+                <button id="presModeBtn" class="header-tool-btn" title="Toggle Fullscreen Presentation Mode (Hotkey: P)">
+                    <i data-lucide="maximize-2"></i> PRESENTATION
+                </button>
+                <button id="demoModeBtn" class="header-tool-btn" title="Run Automated Demo Sequence (Hotkey: D)">
+                    <i data-lucide="play-square"></i> DEMO
+                </button>
+                <button id="vivaModeBtn" class="header-tool-btn" title="Academic Viva & ML Methodology Guide">
+                    <i data-lucide="graduation-cap"></i> VIVA GUIDE
+                </button>
+                <button id="settingsBtn" class="header-tool-btn icon-only" title="System Settings">
+                    <i data-lucide="settings"></i>
+                </button>
+
+                <div class="scenario-id">Scenario ID: <span id="scenarioId">SCN-2024-0356</span></div>
+                <button class="btn-new-scenario" id="newScenarioBtn">NEW SCENARIO</button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BODY GRID -->
+        <div class="dashboard-body">
+            <!-- LEFT COLUMN: SCENARIO INPUT -->
+            <div class="panel panel-scenario-input">
+                <div class="panel-header">
+                    <i data-lucide="file-text"></i>
+                    <span>SCENARIO INPUT</span>
+                </div>
+                
+                <!-- BLUE FORCE -->
+                <div class="force-section">
+                    <div class="force-header blue-force-header">
+                        BLUE FORCE (Friendly)
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Force Strength</label>
+                        <input type="range" class="slider blue-slider" id="forceStrengthA" min="30" max="100" value="80">
+                        <div class="value-box blue-val" id="forceStrengthA-val">80</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Mobility</label>
+                        <input type="range" class="slider blue-slider" id="mobilityA" min="0.3" max="1.0" step="0.01" value="0.75">
+                        <div class="value-box blue-val" id="mobilityA-val">0.75</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Logistics</label>
+                        <input type="range" class="slider blue-slider" id="logisticsA" min="0.3" max="1.0" step="0.01" value="0.70">
+                        <div class="value-box blue-val" id="logisticsA-val">0.70</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Intelligence</label>
+                        <input type="range" class="slider blue-slider" id="intelligenceA" min="0.3" max="1.0" step="0.01" value="0.80">
+                        <div class="value-box blue-val" id="intelligenceA-val">0.80</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Communication</label>
+                        <input type="range" class="slider blue-slider" id="communicationA" min="0.3" max="1.0" step="0.01" value="0.85">
+                        <div class="value-box blue-val" id="communicationA-val">0.85</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Readiness</label>
+                        <input type="range" class="slider blue-slider" id="readinessA" min="0.3" max="1.0" step="0.01" value="0.90">
+                        <div class="value-box blue-val" id="readinessA-val">0.90</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Morale</label>
+                        <input type="range" class="slider blue-slider" id="moraleA" min="0.0" max="1.0" step="0.01" value="0.8">
+                        <div class="value-box blue-val" id="moraleA-val">0.80</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Training</label>
+                        <input type="range" class="slider blue-slider" id="trainingA" min="0.0" max="1.0" step="0.01" value="0.75">
+                        <div class="value-box blue-val" id="trainingA-val">0.75</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Supply Distance (km)</label>
+                        <input type="range" class="slider blue-slider" id="supplyDistanceA" min="0" max="500" step="1" value="80">
+                        <div class="value-box blue-val" id="supplyDistanceA-val">80</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Surprise</label>
+                        <input type="range" class="slider blue-slider" id="surpriseA" min="0.0" max="1.0" step="0.01" value="0.6">
+                        <div class="value-box blue-val" id="surpriseA-val">0.60</div>
+                    </div>
+
+                    <div class="slider-row">
+                        <label>Fatigue</label>
+                        <input type="range" class="slider blue-slider" id="fatigueA" min="0.0" max="1.0" step="0.01" value="0.2">
+                        <div class="value-box blue-val" id="fatigueA-val">0.20</div>
+                    </div>
+
+                    <div class="slider-row">
+                        <label>Equip. Quality</label>
+                        <input type="range" class="slider blue-slider" id="equipmentQualityA" min="0.0" max="1.0" step="0.01" value="0.8">
+                        <div class="value-box blue-val" id="equipmentQualityA-val">0.80</div>
+                    </div>
+                </div>
+                
+                <!-- RED FORCE -->
+                <div class="force-section">
+                    <div class="force-header red-force-header">
+                        RED FORCE (Enemy)
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Force Strength</label>
+                        <input type="range" class="slider red-slider" id="forceStrengthB" min="30" max="100" value="70">
+                        <div class="value-box red-val" id="forceStrengthB-val">70</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Mobility</label>
+                        <input type="range" class="slider red-slider" id="mobilityB" min="0.3" max="1.0" step="0.01" value="0.60">
+                        <div class="value-box red-val" id="mobilityB-val">0.60</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Logistics</label>
+                        <input type="range" class="slider red-slider" id="logisticsB" min="0.3" max="1.0" step="0.01" value="0.55">
+                        <div class="value-box red-val" id="logisticsB-val">0.55</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Intelligence</label>
+                        <input type="range" class="slider red-slider" id="intelligenceB" min="0.3" max="1.0" step="0.01" value="0.60">
+                        <div class="value-box red-val" id="intelligenceB-val">0.60</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Communication</label>
+                        <input type="range" class="slider red-slider" id="communicationB" min="0.3" max="1.0" step="0.01" value="0.65">
+                        <div class="value-box red-val" id="communicationB-val">0.65</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Readiness</label>
+                        <input type="range" class="slider red-slider" id="readinessB" min="0.3" max="1.0" step="0.01" value="0.70">
+                        <div class="value-box red-val" id="readinessB-val">0.70</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Morale</label>
+                        <input type="range" class="slider red-slider" id="moraleB" min="0.0" max="1.0" step="0.01" value="0.6">
+                        <div class="value-box red-val" id="moraleB-val">0.60</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Training</label>
+                        <input type="range" class="slider red-slider" id="trainingB" min="0.0" max="1.0" step="0.01" value="0.55">
+                        <div class="value-box red-val" id="trainingB-val">0.55</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Supply Distance (km)</label>
+                        <input type="range" class="slider red-slider" id="supplyDistanceB" min="0" max="500" step="1" value="150">
+                        <div class="value-box red-val" id="supplyDistanceB-val">150</div>
+                    </div>
+                    
+                    <div class="slider-row">
+                        <label>Surprise</label>
+                        <input type="range" class="slider red-slider" id="surpriseB" min="0.0" max="1.0" step="0.01" value="0.3">
+                        <div class="value-box red-val" id="surpriseB-val">0.30</div>
+                    </div>
+
+                    <div class="slider-row">
+                        <label>Fatigue</label>
+                        <input type="range" class="slider red-slider" id="fatigueB" min="0.0" max="1.0" step="0.01" value="0.4">
+                        <div class="value-box red-val" id="fatigueB-val">0.40</div>
+                    </div>
+
+                    <div class="slider-row">
+                        <label>Equip. Quality</label>
+                        <input type="range" class="slider red-slider" id="equipmentQualityB" min="0.0" max="1.0" step="0.01" value="0.6">
+                        <div class="value-box red-val" id="equipmentQualityB-val">0.60</div>
+                    </div>
+                </div>
+                
+                <!-- ENVIRONMENT -->
+                <div class="env-section">
+                    <div class="env-header">ENVIRONMENT</div>
+                    
+                    <div class="dropdown-row">
+                        <label>Terrain</label>
+                        <select class="dropdown" id="terrainType">
+                            <option value="Open">Open</option>
+                            <option value="Hilly" selected>Hilly</option>
+                            <option value="Forest">Forest</option>
+                            <option value="Desert">Desert</option>
+                            <option value="Urban">Urban</option>
+                            <option value="Mixed">Mixed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="dropdown-row">
+                        <label>Weather</label>
+                        <select class="dropdown" id="weather">
+                            <option value="Clear">Clear</option>
+                            <option value="Cloudy" selected>Cloudy</option>
+                            <option value="Rain">Rain</option>
+                            <option value="Fog">Fog</option>
+                            <option value="Extreme">Extreme</option>
+                        </select>
+                    </div>
+                    
+                    <div class="dropdown-row">
+                        <label>Visibility</label>
+                        <select class="dropdown" id="visibility">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    
+                    <div class="dropdown-row">
+                        <label>Time of Day</label>
+                        <select class="dropdown" id="timeOfDay">
+                            <option value="Day" selected>Day</option>
+                            <option value="Night">Night</option>
+                        </select>
+                    </div>
+                    
+                    <div class="dropdown-row">
+                        <label>Electronic Warfare</label>
+                        <select class="dropdown" id="electronicWarfare">
+                            <option value="0.0">None</option>
+                            <option value="0.25" selected>Low</option>
+                            <option value="0.5">Moderate</option>
+                            <option value="0.75">High</option>
+                            <option value="1.0">Severe</option>
+                        </select>
+                    </div>
+
+                    <div class="dropdown-row">
+                        <label>Season</label>
+                        <select class="dropdown" id="season">
+                            <option value="Spring">Spring</option>
+                            <option value="Summer" selected>Summer</option>
+                            <option value="Autumn">Autumn</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+
+                    <div class="dropdown-row">
+                        <label>Rules of Engagement</label>
+                        <select class="dropdown" id="rulesOfEngagement">
+                            <option value="Permissive" selected>Permissive</option>
+                            <option value="Restrictive">Restrictive</option>
+                            <option value="Defensive">Defensive</option>
+                            <option value="Offensive">Offensive</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- MISSION -->
+                <div class="env-section">
+                    <div class="env-header">MISSION</div>
+                    
+                    <div class="dropdown-row">
+                        <label>Objective Type</label>
+                        <select class="dropdown" id="objectiveType">
+                            <option value="Attack" selected>Attack</option>
+                            <option value="Defend">Defend</option>
+                            <option value="Delay">Delay</option>
+                            <option value="Withdraw">Withdraw</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn-run-simulation" id="runSimulationBtn">
+                    <i data-lucide="play-circle"></i>
+                    RUN SIMULATION
+                </button>
+            </div>
+
+            <!-- RIGHT MAIN AREA GRID -->
+            <div class="main-right-area">
+                <!-- TOP ROW OF PANELS -->
+                <div class="panels-row top-panels-row">
+                    <!-- BATTLEFIELD OVERVIEW -->
+                    <div class="panel panel-battlefield">
+                        <div class="panel-header">
+                            <i data-lucide="map"></i>
+                            <span>BATTLEFIELD OVERVIEW</span>
+                            <span class="weather-indicator" id="weatherIndicator">☁️ CLOUDY</span>
+                            <span class="live-phase-tag" id="livePhaseTag">● SYSTEM READY</span>
+                        </div>
+                        <div class="battlefield-container">
+                            <img id="terrainImage" src="/static/assets/terrain/hilly.png" alt="Terrain">
+                            <div class="grid-overlay"></div>
+                            <div class="terrain-scan-line"></div>
+                            <div class="weather-overlay" id="weatherOverlay"></div>
+                            
+                            <!-- Military Unit Badges (Blue Friendly Units) -->
+                            <div class="tactical-badge blue-badge unit-pulse" style="top: 20%; left: 26%;">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <div class="tactical-badge blue-badge unit-pulse" style="top: 32%; left: 32%;">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <div class="tactical-badge blue-badge unit-pulse" style="top: 45%; left: 22%;">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <div class="tactical-badge blue-badge unit-pulse" style="top: 58%; left: 30%;">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <div class="tactical-badge blue-badge unit-pulse" style="top: 72%; left: 35%;">
+                                <i data-lucide="shield"></i>
+                            </div>
+
+                            <!-- Military Unit Badges (Red Enemy Units) -->
+                            <div class="tactical-badge red-badge unit-pulse" style="top: 18%; left: 68%;">
+                                <i data-lucide="crosshair"></i>
+                            </div>
+                            <div class="tactical-badge red-badge unit-pulse" style="top: 30%; left: 75%;">
+                                <i data-lucide="crosshair"></i>
+                            </div>
+                            <div class="tactical-badge red-badge unit-pulse" style="top: 45%; left: 63%;">
+                                <i data-lucide="crosshair"></i>
+                            </div>
+                            <div class="tactical-badge red-badge unit-pulse" style="top: 58%; left: 71%;">
+                                <i data-lucide="crosshair"></i>
+                            </div>
+                            <div class="tactical-badge red-badge unit-pulse" style="top: 72%; left: 78%;">
+                                <i data-lucide="crosshair"></i>
+                            </div>
+                            <div class="tactical-badge red-badge unit-pulse" style="top: 82%; left: 66%;">
+                                <i data-lucide="crosshair"></i>
+                            </div>
+
+                            <div class="map-legend">
+                                <div class="legend-row"><span class="blue-box"></span> Friendly Units</div>
+                                <div class="legend-row"><span class="red-box"></span> Enemy Units</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PREDICTED OUTCOME -->
+                    <div class="panel panel-predicted-outcome">
+                        <div class="panel-header">
+                            <span>PREDICTED OUTCOME</span>
+                            <span class="confidence-badge high" id="confidenceBadge" title="Confidence reflects predicted class probability and should not be interpreted as certainty.">HIGH CONFIDENCE</span>
+                        </div>
+                        <div class="outcome-title" id="outcomeText">BLUE FORCE ADVANTAGE</div>
+                        
+                        <div class="donut-and-probs">
+                            <div class="donut-wrapper">
+                                <div id="donutChart"></div>
+                            </div>
+                            <div class="probs-box">
+                                <div class="probs-header">OUTCOME PROBABILITIES</div>
+                                <div class="prob-item">
+                                    <div class="prob-label-val">
+                                        <span>Blue Force Advantage</span>
+                                        <span id="probValueA">72%</span>
+                                    </div>
+                                    <div class="prob-bar-track">
+                                        <div class="prob-bar-fill blue-fill" id="probBarA" style="width: 72%;"></div>
+                                    </div>
+                                </div>
+                                <div class="prob-item">
+                                    <div class="prob-label-val">
+                                        <span>Red Force Advantage</span>
+                                        <span id="probValueB">22%</span>
+                                    </div>
+                                    <div class="prob-bar-track">
+                                        <div class="prob-bar-fill red-fill" id="probBarB" style="width: 22%;"></div>
+                                    </div>
+                                </div>
+                                <div class="prob-item">
+                                    <div class="prob-label-val">
+                                        <span>Stalemate</span>
+                                        <span id="probValueDraw">6%</span>
+                                    </div>
+                                    <div class="prob-bar-track">
+                                        <div class="prob-bar-fill gray-fill" id="probBarDraw" style="width: 6%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-cards-grid">
+                            <div class="m-card">
+                                <div class="m-label">Expected Duration</div>
+                                <div class="m-val" id="metricDuration">2.6 Days</div>
+                            </div>
+                            <div class="m-card">
+                                <div class="m-label">Estimated Casualties</div>
+                                <div class="m-val" id="metricCasualties">Blue: 320 - 450<br><span style="color:#ef4444;">Red: 520 - 680</span></div>
+                            </div>
+                            <div class="m-card">
+                                <div class="m-label">Resource Depletion</div>
+                                <div class="m-val" id="metricResource">Blue: Medium<br><span style="color:#ef4444;">Red: High</span></div>
+                            </div>
+                        </div>
+
+                        <!-- WHY THIS PREDICTION BUTTON -->
+                        <button id="whyPredictionBtn" class="btn-why-prediction">
+                            <i data-lucide="sparkles"></i>
+                            WHY THIS PREDICTION? (AI EXPLANATION)
+                        </button>
+                    </div>
+
+                    <!-- TOP INFLUENCING FACTORS -->
+                    <div class="panel panel-top-factors">
+                        <div class="panel-header">
+                            <i data-lucide="star"></i>
+                            <span>TOP INFLUENCING FACTORS</span>
+                        </div>
+                        <div id="influencingFactors" class="influencing-chart-box"></div>
+                        <div class="influencing-legend-text">(+) Positive Impact for Blue &nbsp;|&nbsp; (−) Negative Impact for Blue</div>
+                        <button class="btn-view-shap" id="viewShapBtn">VIEW SHAP ANALYSIS</button>
+                    </div>
+                </div>
+
+                <!-- SECOND ROW OF PANELS -->
+                <div class="panels-row second-panels-row">
+                    <!-- FEATURE IMPORTANCE (SHAP SUMMARY) -->
+                    <div class="panel panel-shap-summary">
+                        <div class="panel-header">
+                            <span>FEATURE IMPORTANCE (SHAP SUMMARY)</span>
+                        </div>
+                        <div id="shapSummary" class="shap-summary-box"></div>
+                    </div>
+
+                    <!-- MODEL PERFORMANCE -->
+                    <div class="panel panel-model-perf">
+                        <div class="panel-header">
+                            <span>MODEL PERFORMANCE</span>
+                            <button id="inspectRfBtn" class="panel-action-link" title="Open Random Forest Decision Tree Inspector">
+                                <i data-lucide="network"></i> TREES
+                            </button>
+                        </div>
+                        <div class="model-used-tag">Model Used: Random Forest Classifier (300 Trees)</div>
+                        <div class="perf-body">
+                            <div class="metrics-column">
+                                <div class="p-row"><span>Accuracy</span><span id="metricAccuracy">0.91</span></div>
+                                <div class="p-row"><span>Precision</span><span id="metricPrecision">0.90</span></div>
+                                <div class="p-row"><span>Recall</span><span id="metricRecall">0.91</span></div>
+                                <div class="p-row"><span>F1-Score</span><span id="metricF1">0.90</span></div>
+                                <div class="p-row"><span>ROC-AUC</span><span id="metricRocAuc">0.95</span></div>
+                            </div>
+                            <div class="roc-column">
+                                <div class="roc-title">ROC CURVE</div>
+                                <div id="rocCurve"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SCENARIO HISTORY -->
+                    <div class="panel panel-scenario-history">
+                        <div class="panel-header">
+                            <span>SCENARIO HISTORY</span>
+                            <button id="compareBtn" class="panel-action-link" title="Compare Two Historical Scenarios">
+                                <i data-lucide="git-compare"></i> COMPARE
+                            </button>
+                        </div>
+                        <div class="history-table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>Blue Win %</th>
+                                        <th>Outcome</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BATTLE SIMULATION TIMELINE -->
+                <div class="panel panel-timeline">
+                    <div class="panel-header">
+                        <i data-lucide="activity"></i>
+                        <span>BATTLE SIMULATION TIMELINE</span>
+                        <span class="timeline-status" id="timelineStatus">● READY</span>
+                    </div>
+                    <div class="timeline-container">
+                        <div class="timeline-phases">
+                            <div class="phase phase-deployment" id="phaseDeployment">
+                                <div class="phase-icon">🚀</div>
+                                <div class="phase-label">DEPLOYMENT</div>
+                                <div class="phase-time" id="phaseTime1">0-0.5h</div>
+                            </div>
+                            <div class="phase phase-engagement" id="phaseEngagement">
+                                <div class="phase-icon">⚔️</div>
+                                <div class="phase-label">ENGAGEMENT</div>
+                                <div class="phase-time" id="phaseTime2">0.5-1.5h</div>
+                            </div>
+                            <div class="phase phase-maneuver" id="phaseManeuver">
+                                <div class="phase-icon">🎯</div>
+                                <div class="phase-label">MANEUVER</div>
+                                <div class="phase-time" id="phaseTime3">1.5-2.5h</div>
+                            </div>
+                            <div class="phase phase-resolution" id="phaseResolution">
+                                <div class="phase-icon">🏁</div>
+                                <div class="phase-label">RESOLUTION</div>
+                                <div class="phase-time" id="phaseTime4">2.5-3.0h</div>
+                            </div>
+                        </div>
+                        <div class="timeline-metrics">
+                            <div class="metric-row">
+                                <span class="metric-label">Blue Force Strength</span>
+                                <div class="metric-bar-track">
+                                    <div class="metric-bar-fill blue-fill" id="timelineBlueForce" style="width: 80%;"></div>
+                                </div>
+                                <span class="metric-value" id="timelineBlueVal">80%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Red Force Strength</span>
+                                <div class="metric-bar-track">
+                                    <div class="metric-bar-fill red-fill" id="timelineRedForce" style="width: 70%;"></div>
+                                </div>
+                                <span class="metric-value" id="timelineRedVal">70%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Casualties (Blue)</span>
+                                <div class="metric-bar-track">
+                                    <div class="metric-bar-fill casualty-fill" id="timelineBlueCasualty" style="width: 15%;"></div>
+                                </div>
+                                <span class="metric-value" id="timelineBlueCasualtyVal">15%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Casualties (Red)</span>
+                                <div class="metric-bar-track">
+                                    <div class="metric-bar-fill casualty-fill" id="timelineRedCasualty" style="width: 25%;"></div>
+                                </div>
+                                <span class="metric-value" id="timelineRedCasualtyVal">25%</span>
+                            </div>
+                        </div>
+                        <div class="timeline-events" id="timelineEvents">
+                            <div class="event-item">
+                                <span class="event-time">00:00</span>
+                                <span class="event-desc">Forces deployed to sector Alpha</span>
+                            </div>
+                            <div class="event-item">
+                                <span class="event-time">00:30</span>
+                                <span class="event-desc">Initial contact established</span>
+                            </div>
+                            <div class="event-item">
+                                <span class="event-time">01:15</span>
+                                <span class="event-desc">Engagement in progress</span>
+                            </div>
+                        </div>
+                        <div class="timeline-progress">
+                            <div class="progress-label">SIMULATION PROGRESS</div>
+                            <div class="progress-bar-track">
+                                <div class="progress-bar-fill" id="timelineProgress" style="width: 0%;"></div>
+                            </div>
+                            <div class="progress-percent" id="timelineProgressPercent">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLLAPSIBLE COMMAND CONSOLE / EVENT FEED BAR -->
+        <div class="console-drawer" id="consoleDrawer">
+            <div class="console-header" id="consoleHeader">
+                <span class="console-title"><i data-lucide="terminal"></i> BARBARIK DIAGNOSTIC CONSOLE & SIMULATION LOG</span>
+                <span class="console-toggle-icon"><i data-lucide="chevron-up"></i></span>
+            </div>
+            <div class="console-body" id="consoleBody">
+                <div class="log-entry system">> [SYSTEM] BARBARIK Operational Diagnostic Logging Initialized.</div>
+                <div class="log-entry info">> [INFO] Dataset loaded: 20,000 synthetic wargaming scenarios.</div>
+                <div class="log-entry info">> [INFO] Model loaded: RandomForestClassifier(n_estimators=300, random_state=42).</div>
+                <div class="log-entry ready">> [READY] BARBARIK Analytics Laboratory ready for simulation input.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODALS & DRAWERS ==================== -->
+
+    <!-- LIVE SIMULATION PROGRESS MODAL -->
+    <div id="simProgressModal" class="modal-overlay">
+        <div class="modal-card sim-progress-card">
+            <div class="modal-title"><i data-lucide="cpu"></i> EXECUTING WARGAME SIMULATION</div>
+            <div class="sim-stage-desc" id="simStageDesc">INITIALIZING SCENARIO PARAMETERS...</div>
+            <div class="sim-progress-bar-track">
+                <div class="sim-progress-bar-fill" id="simProgressFill"></div>
+            </div>
+            <div class="sim-stages-timeline">
+                <div class="stage-step" id="stage1">1. Scenario</div>
+                <div class="stage-step" id="stage2">2. Environment</div>
+                <div class="stage-step" id="stage3">3. Simulation</div>
+                <div class="stage-step" id="stage4">4. RF Model</div>
+                <div class="stage-step" id="stage5">5. SHAP XAI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHY THIS PREDICTION / XAI DRAWER -->
+    <div id="xaiDrawer" class="modal-overlay">
+        <div class="modal-card xai-card">
+            <div class="modal-header-row">
+                <h2><i data-lucide="sparkles"></i> WHY THIS PREDICTION? (SHAP EXPLANATION)</h2>
+                <button class="modal-close-btn" class="closeXai"><i data-lucide="x"></i></button>
+            </div>
+            <div class="xai-body">
+                <div class="xai-section">
+                    <h3>TOP CONTRIBUTING FEATURES</h3>
+                    <div class="xai-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>SHAP Impact</th>
+                                    <th>Direction</th>
+                                </tr>
+                            </thead>
+                            <tbody id="xaiFeaturesBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="xai-section">
+                    <h3>MODEL REASONING SUMMARY</h3>
+                    <div class="xai-reasoning-box" id="xaiReasoningBox">
+                        Generating explanation summary...
+                    </div>
+                </div>
+            </div>
+            <div class="xai-footer">
+                <button id="exportReportBtn" class="btn-export"><i data-lucide="file-text"></i> EXPORT ANALYSIS REPORT (HTML/PDF)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENARIO COMPARISON MODAL -->
+    <div id="compareModal" class="modal-overlay">
+        <div class="modal-card compare-card">
+            <div class="modal-header-row">
+                <h2><i data-lucide="git-compare"></i> SCENARIO COMPARISON</h2>
+                <button class="modal-close-btn" class="closeCompare"><i data-lucide="x"></i></button>
+            </div>
+            <div class="compare-selectors">
+                <div>
+                    <label>Scenario A:</label>
+                    <select id="compareSelectA" class="dropdown"></select>
+                </div>
+                <div>
+                    <label>Scenario B:</label>
+                    <select id="compareSelectB" class="dropdown"></select>
+                </div>
+            </div>
+            <div class="compare-grid" id="compareGrid">
+                <!-- Comparative table rendered via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- RANDOM FOREST TREE INSPECTOR MODAL -->
+    <div id="rfInspectorModal" class="modal-overlay">
+        <div class="modal-card inspector-card">
+            <div class="modal-header-row">
+                <h2><i data-lucide="network"></i> RANDOM FOREST INSPECTOR</h2>
+                <button class="modal-close-btn" class="closeInspector"><i data-lucide="x"></i></button>
+            </div>
+            <div class="inspector-params-grid">
+                <div class="param-box"><span class="p-label">Trees</span><span class="p-val">300</span></div>
+                <div class="param-box"><span class="p-label">Training Samples</span><span class="p-val">20,000</span></div>
+                <div class="param-box"><span class="p-label">Features</span><span class="p-val">29</span></div>
+                <div class="param-box"><span class="p-label">Classes</span><span class="p-val">3</span></div>
+                <div class="param-box"><span class="p-label">Random State</span><span class="p-val">42</span></div>
+                <div class="param-box"><span class="p-label">Class Weights</span><span class="p-val">Balanced</span></div>
+            </div>
+            <h3 style="font-size: 11px; margin-top: 10px; color: var(--gold-text);">REPRESENTATIVE DECISION TREE NODE PATH</h3>
+            <div class="tree-viz-container" id="treeVizContainer">
+                <!-- SVG decision tree diagram -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ACADEMIC VIVA MODE MODAL -->
+    <div id="academicModal" class="modal-overlay">
+        <div class="modal-card viva-card">
+            <div class="modal-header-row">
+                <h2><i data-lucide="graduation-cap"></i> ACADEMIC METHODOLOGY & VIVA GUIDE</h2>
+                <button class="modal-close-btn" class="closeViva"><i data-lucide="x"></i></button>
+            </div>
+            <div class="viva-body">
+                <div class="viva-item">
+                    <h4>1. Why Random Forest Classifier?</h4>
+                    <p>Random Forest handles non-linear feature interactions (such as mobility × terrain penalty and fog intel imbalances) without risk of overfitting on tabular wargaming simulations.</p>
+                </div>
+                <div class="viva-item">
+                    <h4>2. How is Synthetic Data Generated?</h4>
+                    <p>Physics-based simulation rules model force strength ratios, logistics depletion, terrain modifiers, and weather visibility before applying Gaussian noise (\(\sigma=0.05\)) to produce 20,000 realistic scenarios.</p>
+                </div>
+                <div class="viva-item">
+                    <h4>3. What is SHAP Explainability?</h4>
+                    <p>SHAP (Shapley Additive exPlanations) uses game-theoretic Shapley values to calculate the exact marginal contribution of each input variable to the model's outcome prediction.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS & SOUND MODAL -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-card settings-card">
+            <div class="modal-header-row">
+                <h2><i data-lucide="settings"></i> SYSTEM & AUDIO SETTINGS</h2>
+                <button class="modal-close-btn" class="closeSettings"><i data-lucide="x"></i></button>
+            </div>
+            <div class="settings-form">
+                <div class="setting-row">
+                    <label>Master Sound</label>
+                    <input type="checkbox" id="settingMasterSound" checked>
+                </div>
+                <div class="setting-row">
+                    <label>UI Click Sounds</label>
+                    <input type="checkbox" id="settingUiSound" checked>
+                </div>
+                <div class="setting-row">
+                    <label>Simulation Audio</label>
+                    <input type="checkbox" id="settingSimSound" checked>
+                </div>
+                <div class="setting-row">
+                    <label>Master Volume</label>
+                    <input type="range" id="settingVolume" min="0" max="100" value="50">
+                </div>
+                <div class="setting-row">
+                    <label>Reduce Motion</label>
+                    <input type="checkbox" id="settingReduceMotion">
+                </div>
+                <button id="btnReplayIntro" class="btn-replay-intro"><i data-lucide="rotate-ccw"></i> REPLAY BOOT INTRO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TACTICAL AI COPILOT / CHATBOT ==================== -->
+    <button id="chatbotToggleBtn" class="chatbot-toggle-btn" title="Tactical AI Copilot & Viva Advisor">
+        <span class="chatbot-pulse-dot"></span>
+        <i data-lucide="bot"></i>
+        <span class="chatbot-btn-text">TACTICAL ADVISOR</span>
+    </button>
+
+    <div id="chatbotModal" class="chatbot-modal hidden">
+        <div class="chatbot-header">
+            <div class="chatbot-header-left">
+                <div class="chatbot-status-dot"></div>
+                <div class="chatbot-header-info">
+                    <span class="chatbot-header-title">BARBARIK TACTICAL COPILOT</span>
+                    <span class="chatbot-header-sub">Online · XGBoost Intelligence · Viva Defense</span>
+                </div>
+            </div>
+            <div class="chatbot-header-actions">
+                <button id="chatbotClearBtn" class="chat-tool-btn" title="Clear Chat"><i data-lucide="trash-2"></i></button>
+                <button id="chatbotCloseBtn" class="chat-tool-btn" title="Close"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+
+        <div class="chatbot-quick-chips" id="chatQuickChips">
+            <button class="chat-chip" data-prompt="Analyze the active scenario">🎯 Analyze Scenario</button>
+            <button class="chat-chip" data-prompt="How can Blue Force win this scenario?">🔵 How to Win (Blue)</button>
+            <button class="chat-chip" data-prompt="Why XGBoost instead of Random Forest?">🎓 Why XGBoost?</button>
+            <button class="chat-chip" data-prompt="Explain how SHAP TreeExplainer works">🔍 Explain SHAP</button>
+            <button class="chat-chip" data-prompt="What are the keyboard shortcuts?">⌨️ Hotkeys</button>
+        </div>
+
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chat-msg assistant-msg">
+                <div class="chat-avatar"><i data-lucide="bot"></i></div>
+                <div class="chat-bubble">
+                    <strong>BARBARIK Tactical Copilot online.</strong><br>
+                    I can advise on your active scenario parameters, explain why outcomes occur, guide tactical adjustments, or help answer technical questions for your viva presentation.
+                </div>
+            </div>
+        </div>
+
+        <div class="chatbot-input-bar">
+            <input type="text" id="chatbotInput" placeholder="Ask tactical advisor or viva question..." autocomplete="off">
+            <button id="chatbotSendBtn" class="chatbot-send-btn" title="Send Message">
+                <i data-lucide="send"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

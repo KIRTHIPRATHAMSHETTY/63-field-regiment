@@ -1,0 +1,1 @@
+"""BARBARIK dashboard pages package."""

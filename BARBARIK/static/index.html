@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BARBARIK — ML-Based Wargaming Outcome Prediction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="stylesheet" href="/static/style.css" />
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+<div class="app-grid">
+
+  <!-- ================= HEADER ================= -->
+  <header class="header">
+    <div class="header-left">
+      <svg class="shield-logo" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z" fill="#10b981" stroke="#10b981" stroke-width="1"/>
+        <path d="M9 12l2 2 4-4" stroke="#0a0e1a" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="header-text">
+        <h1>ML-BASED WARGAMING OUTCOME PREDICTION</h1>
+        <p>Predicting Outcomes in Simulated Military Scenarios using Machine Learning</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="scenario-id">Scenario ID: <span id="scenario-id">SCN-2024-0356</span></span>
+      <button id="btn-new-scenario" class="btn-new">
+        <i class="fa-solid fa-plus"></i> NEW SCENARIO
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN ROW ================= -->
+  <!-- LEFT: Scenario Input -->
+  <section class="panel panel-scenario">
+    <div class="panel-header"><i class="fa-solid fa-sliders"></i> SCENARIO INPUT</div>
+    <div class="scenario-body">
+      <div class="force-group">
+        <div class="force-label blue">BLUE FORCE (Friendly)</div>
+        <div class="slider-row"><label>Force Strength</label><input type="range" id="a_force" min="10" max="100" value="80" step="1" data-side="a" /><span class="value-box" id="a_force_val">80</span></div>
+        <div class="slider-row"><label>Mobility</label><input type="range" id="a_mobility" min="0" max="1" value="0.75" step="0.01" data-side="a" /><span class="value-box" id="a_mobility_val">0.75</span></div>
+        <div class="slider-row"><label>Logistics</label><input type="range" id="a_logistics" min="0" max="1" value="0.70" step="0.01" data-side="a" /><span class="value-box" id="a_logistics_val">0.70</span></div>
+        <div class="slider-row"><label>Intelligence</label><input type="range" id="a_intelligence" min="0" max="1" value="0.80" step="0.01" data-side="a" /><span class="value-box" id="a_intelligence_val">0.80</span></div>
+        <div class="slider-row"><label>Communication</label><input type="range" id="a_communication" min="0" max="1" value="0.85" step="0.01" data-side="a" /><span class="value-box" id="a_communication_val">0.85</span></div>
+      </div>
+      <div class="force-group">
+        <div class="force-label red">RED FORCE (Enemy)</div>
+        <div class="slider-row"><label>Force Strength</label><input type="range" id="b_force" min="10" max="100" value="70" step="1" data-side="b" /><span class="value-box" id="b_force_val">70</span></div>
+        <div class="slider-row"><label>Mobility</label><input type="range" id="b_mobility" min="0" max="1" value="0.60" step="0.01" data-side="b" /><span class="value-box" id="b_mobility_val">0.60</span></div>
+        <div class="slider-row"><label>Logistics</label><input type="range" id="b_logistics" min="0" max="1" value="0.55" step="0.01" data-side="b" /><span class="value-box" id="b_logistics_val">0.55</span></div>
+        <div class="slider-row"><label>Intelligence</label><input type="range" id="b_intelligence" min="0" max="1" value="0.60" step="0.01" data-side="b" /><span class="value-box" id="b_intelligence_val">0.60</span></div>
+        <div class="slider-row"><label>Communication</label><input type="range" id="b_communication" min="0" max="1" value="0.65" step="0.01" data-side="b" /><span class="value-box" id="b_communication_val">0.65</span></div>
+      </div>
+      <div class="env-group">
+        <div class="force-label">ENVIRONMENT</div>
+        <div class="slider-row"><label>Readiness (A)</label><input type="range" id="a_readiness" min="0" max="1" value="0.78" step="0.01" data-side="a" /><span class="value-box" id="a_readiness_val">0.78</span></div>
+        <div class="slider-row"><label>Readiness (B)</label><input type="range" id="b_readiness" min="0" max="1" value="0.62" step="0.01" data-side="b" /><span class="value-box" id="b_readiness_val">0.62</span></div>
+        <div class="select-row"><label>Terrain</label><select id="terrain_type"><option>Open</option><option selected>Hilly</option><option>Forest</option><option>Desert</option><option>Urban</option><option>Mixed</option></select></div>
+        <div class="select-row"><label>Weather</label><select id="weather"><option>Clear</option><option selected>Cloudy</option><option>Rain</option><option>Fog</option><option>Extreme</option></select></div>
+        <div class="select-row"><label>Visibility</label><select id="visibility"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+        <div class="select-row"><label>Time of Day</label><select id="time_of_day"><option selected>Day</option><option>Night</option></select></div>
+        <div class="slider-row"><label>Env. Difficulty</label><input type="range" id="environmental_difficulty" min="0" max="1" value="0.35" step="0.01" /><span class="value-box" id="environmental_difficulty_val">0.35</span></div>
+      </div>
+      <button id="btn-run" class="btn-run"><i class="fa-solid fa-play"></i> RUN SIMULATION</button>
+      <button id="btn-reset" class="btn-reset"><i class="fa-solid fa-rotate-left"></i> RESET SCENARIO</button>
+    </div>
+  </section>
+
+  <!-- CENTER: Battlefield Overview -->
+  <section class="panel panel-battlefield">
+    <div class="panel-header"><i class="fa-solid fa-map"></i> BATTLEFIELD OVERVIEW</div>
+    <div id="battlefield-chart" class="battlefield-chart"></div>
+    <div class="battlefield-legend">
+      <span><span class="dot blue"></span> Friendly Units</span>
+      <span><span class="sq red"></span> Enemy Units</span>
+    </div>
+  </section>
+
+  <!-- RIGHT: Predicted Outcome + Top Factors -->
+  <section class="panel-outcome-wrap">
+    <section class="panel panel-outcome">
+      <div class="panel-header"><i class="fa-solid fa-bullseye"></i> PREDICTED OUTCOME</div>
+      <div class="outcome-body">
+        <div class="outcome-title" id="outcome-title">—</div>
+        <div id="donut-chart" class="donut-chart"></div>
+        <div class="prob-section">
+          <div class="prob-subtitle">OUTCOME PROBABILITIES</div>
+          <div class="prob-bar-row"><span class="prob-label blue">Blue Force Advantage</span><div class="prob-track"><div class="prob-fill blue" id="bar-a" style="width:0%"></div></div><span class="prob-pct" id="pct-a">0%</span></div>
+          <div class="prob-bar-row"><span class="prob-label red">Red Force Advantage</span><div class="prob-track"><div class="prob-fill red" id="bar-b" style="width:0%"></div></div><span class="prob-pct" id="pct-b">0%</span></div>
+          <div class="prob-bar-row"><span class="prob-label gray">Stalemate</span><div class="prob-track"><div class="prob-fill gray" id="bar-d" style="width:0%"></div></div><span class="prob-pct" id="pct-d">0%</span></div>
+        </div>
+        <div class="metric-cards">
+          <div class="metric-card"><div class="metric-label">Expected Duration</div><div class="metric-value" id="metric-duration">—</div></div>
+          <div class="metric-card"><div class="metric-label">Estimated Casualties</div><div class="metric-value small" id="metric-casualties">—</div></div>
+          <div class="metric-card"><div class="metric-label">Resource Depletion</div><div class="metric-value small" id="metric-resource">—</div></div>
+        </div>
+      </div>
+    </section>
+    <section class="panel panel-factors">
+      <div class="panel-header"><i class="fa-solid fa-chart-column"></i> TOP INFLUENCING FACTORS</div>
+      <div id="factors-chart" class="factors-chart"></div>
+      <div class="factors-legend">(+) Positive Impact for Blue &nbsp;|&nbsp; (−) Negative Impact for Blue</div>
+      <button id="btn-shap" class="btn-view-shap"><i class="fa-solid fa-magnifying-glass-chart"></i> VIEW SHAP ANALYSIS</button>
+    </section>
+  </section>
+
+  <!-- ================= SECOND ROW ================= -->
+  <!-- LEFT: SHAP Summary -->
+  <section class="panel panel-shap">
+    <div class="panel-header"><i class="fa-solid fa-bezier-curve"></i> FEATURE IMPORTANCE (SHAP SUMMARY)</div>
+    <div id="shap-chart" class="shap-chart"></div>
+  </section>
+
+  <!-- CENTER: Model Performance -->
+  <section class="panel panel-performance">
+    <div class="panel-header"><i class="fa-solid fa-gauge-high"></i> MODEL PERFORMANCE</div>
+    <div class="perf-body">
+      <div class="perf-model-used">Model Used: <span id="model-used">Random Forest Classifier</span></div>
+      <div class="perf-grid">
+        <div class="perf-metrics">
+          <div class="perf-row"><span>Accuracy</span><span id="m-accuracy">—</span></div>
+          <div class="perf-row"><span>Precision</span><span id="m-precision">—</span></div>
+          <div class="perf-row"><span>Recall</span><span id="m-recall">—</span></div>
+          <div class="perf-row"><span>F1-Score</span><span id="m-f1">—</span></div>
+          <div class="perf-row"><span>ROC-AUC</span><span id="m-roc">—</span></div>
+        </div>
+        <div id="roc-chart" class="roc-chart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Scenario History -->
+  <section class="panel panel-history">
+    <div class="panel-header"><i class="fa-solid fa-clock-rotate-left"></i> SCENARIO HISTORY</div>
+    <div class="history-table">
+      <table>
+        <thead><tr><th>ID</th><th>Date</th><th>Blue Win %</th><th>Outcome</th><th></th></tr></thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= BOTTOM: System Workflow ================= -->
+  <section class="panel panel-workflow">
+    <div class="panel-header"><i class="fa-solid fa-diagram-project"></i> SYSTEM WORKFLOW</div>
+    <div class="workflow-body">
+      <div class="wf-step"><div class="wf-icon"><i class="fa-solid fa-user"></i></div><div class="wf-title">Scenario Input</div><div class="wf-desc">User defines scenario parameters</div></div>
+      <div class="wf-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="wf-step"><div class="wf-icon"><i class="fa-solid fa-cube"></i></div><div class="wf-title">Simulation Engine</div><div class="wf-desc">Runs wargame simulation (thousands of iterations)</div></div>
+      <div class="wf-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="wf-step"><div class="wf-icon"><i class="fa-solid fa-list"></i></div><div class="wf-title">Dataset Generation</div><div class="wf-desc">Generates outcomes from simulations</div></div>
+      <div class="wf-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="wf-step"><div class="wf-icon"><i class="fa-solid fa-brain"></i></div><div class="wf-title">Model Training</div><div class="wf-desc">ML model learns from simulated data</div></div>
+      <div class="wf-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="wf-step"><div class="wf-icon"><i class="fa-solid fa-magnifying-glass"></i></div><div class="wf-title">Outcome Prediction</div><div class="wf-desc">Predicts outcome for new scenario</div></div>
+      <div class="wf-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="wf-step"><div class="wf-icon"><i class="fa-solid fa-compass"></i></div><div class="wf-title">Explainability</div><div class="wf-desc">SHAP explains key influencing factors</div></div>
+      <div class="wf-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="wf-step wf-final"><div class="wf-icon final"><i class="fa-solid fa-lightbulb"></i></div><div class="wf-title">Better Decisions</div><div class="wf-desc">Data-driven insights for strategic planning</div></div>
+    </div>
+  </section>
+
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
